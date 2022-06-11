@@ -1,0 +1,38 @@
+:root {
+    --top: 110px;
+}
+.floor {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 2px solid gray;
+}
+.buttonContainer {
+    margin-right: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+
+}
+.lift {
+    width: 50px;
+    height: 100px;
+}
+.liftCurrent {
+    background-color: blue;
+}
+.liftAnimated {
+    background-color: blue;
+    width: 50px;
+    height: 100px;
+    position: relative;
+    animation: move 1s 1;
+}
+
+@keyframes move {
+    0% {
+        top:var(--top);
+    }
+    100% {
+        top: 0px;
+    }
+}
