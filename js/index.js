@@ -1,74 +1,104 @@
-const Container = document.getElementById("container");
-
-const docStyle = document.documentElement.style
-const floorLifts = []
-const upBtns = []
-const downBtns = []
-let currentFloor = 3;
+const Container = document.getElementById("container")
+const addfloorBtn = document.getElementById("addfloor")
+let Floors = 0
 let isrunning = false
+let liftpos = 0
+const targetFloors = []
 
-// Creating four floors for the very first time
+function createElement({type, attributes={}, innerText}) {
+    const element = document.createElement(type)
+    Object.keys(attributes).forEach(item => {
+        element.setAttribute(item, attributes[item]);
+    })
+    element.textContent = innerText
+    return element
+}
+
+function addFloor() {
+    const floor = createElement({type: "div", attributes: {class: "floor"}})
+    const btnContainer = createElement({type: "div", attributes: {class: "buttonContainer"}})
+    const floorNumber = createElement({type: "div", attributes: {class: "floorNumber"}, innerText: `floor ${Floors}`})
+    
+    const upBtn = createElement({type: "button", attributes: {class: "upBtn", floorno: `${Floors}`}, innerText: "up"})
+    const DownBtn = createElement({type: "button", attributes: {class: "downBtn", floorno: `${Floors}`},innerText: "Down"})
+    
+    upBtn.addEventListener("click", () => move(upBtn.getAttribute("floorno")))
+    DownBtn.addEventListener("click", () => move(DownBtn.getAttribute("floorno")))
+    
+    btnContainer.appendChild(upBtn)
+    btnContainer.appendChild(DownBtn)
+    floor.appendChild(btnContainer)
+    floor.appendChild(floorNumber)
+    Container.prepend(floor)
+    Floors++
+}
+
+function addLift() {
+    liftpos++
+    const elevator = createElement({type: "div", attributes: {class: "elevator", onfloor: 0}})
+    const door1 = createElement({type: "div", attributes: {class: "door"}})
+    const door2 = createElement({type: "div", attributes: {class: "door"}})
+    elevator.setAttribute("id", `pos${liftpos}`)
+    
+    elevator.appendChild(door1)
+    elevator.appendChild(door2)
+    Container.append(elevator)
+    definepos()
+}
+
+function definepos() {
+    const elevator = document.getElementById(`pos${liftpos}`)
+    elevator.style.left = `${100 * liftpos}px`
+}
 
 for(let i = 0; i < 4; i++) {
-    createFloor()
+    addFloor()
 }
 
-function createFloor() {
-    const div = document.createElement("div")
-    const buttonContainer = document.createElement("div")
-    const lift = document.createElement("div")
-    const button1 = document.createElement("button")
-    const button2 = document.createElement("button")
+addLift()
+addLift()
+addLift()
+
+console.log(Container)
+
+ function move(targetFloor) {
+        const elevator = document.querySelector(".elevator")
+        
+        if(elevator.classList.contains("busy")) {
+            targetFloors.push(targetFloor)
+        } else {
+            let currentFloor = elevator.getAttribute("onfloor")
+            let duration = Math.abs(targetFloor - currentFloor) * 2
     
-    button1.innerText = "Up"
-    button2.innerText = "Down"
+            elevator.setAttribute("onfloor",targetFloor)
+            elevator.style.transition = `transform ${duration}s linear`
+            elevator.style.transform = `translateY(-${(120 * targetFloor)}px)`
+            elevator.classList.add("busy")
+            console.log(duration)
+
+            let doors = document.querySelectorAll(".door")
+            console.log(doors[0])
+
+            setTimeout(() => {
+                doors[0].style.transform = 'translateX(-30px)'
+                doors[1].style.transform = 'translateX(30px)'
+            }, duration * 1000)
+
+            setTimeout(() => {
+                doors[0].style.transform = "none"
+                doors[1].style.transform = "none"
+            }, duration * 1000 + 3000)
     
-    div.classList.add("floor")
-    buttonContainer.classList.add("buttonContainer")
-    lift.classList.add("lift")
-    button1.classList.add("upButton")
-    button2.classList.add("downButton")
-    button1.setAttribute("id",`id${Math.random()}_btn`)
-    button2.setAttribute("id", `id${Math.random()}_btn`)
+            setTimeout(() => {
+                elevator.classList.remove("busy")
+                if(targetFloors.length) {
+                    move(targetFloors.shift())
+                }
+            }, duration * 1000 + 5000)
+        }
+        
     
-    Container.appendChild(div)
-    buttonContainer.appendChild(button1)
-    buttonContainer.appendChild(button2)
-    div.appendChild(buttonContainer)
-    div.appendChild(lift)
-
-    floorLifts.push(lift)
-    upBtns.push(button1)
-    downBtns.push(button2)
 }
-floorLifts[currentFloor].classList.add("liftCurrent")
+addfloorBtn.addEventListener("click",addFloor)
 
-let btnsup = document.querySelectorAll(".upButton")
-let btnsDown = document.querySelectorAll(".downButton")
-
-for(let i = 0; i < btnsup.length; i++) {
-    btnsup[i].addEventListener("click", function (e) {
-        move(e, "up")
-    })
-}
-
-for(let i = 0; i < btnsDown.length; i++) {
-    btnsDown[i].addEventListener("click", function (e) {
-        move(e, "down")
-    })
-}
-
-function move(e, btnPressed) {
-    if(isrunning === false) {
-        let animationwidthup = 110 * (currentFloor -  upBtns.indexOf(e.target))
-        let animationwidthdown = 110 * (currentFloor -  downBtns.indexOf(e.target))
-        let animationwidth = btnPressed === "up" ? animationwidthup : animationwidthdown
-        console.log(animationwidth)
-        console.log(currentFloor)
-        floorLifts[currentFloor].classList.remove("liftCurrent")
-        floorLifts[currentFloor].classList.remove("liftAnimated")
-        docStyle.setProperty("--top", `${animationwidth}px`)
-        currentFloor = btnPressed === "up" ? upBtns.indexOf(e.target) : downBtns.indexOf(e.target)
-        floorLifts[currentFloor].classList.add("liftAnimated")
-    }
-}
+// use id to get the lift one after the other
