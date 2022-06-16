@@ -61,3 +61,12 @@ button {
     transition: transform 2s linear;
     z-index: 2;
 }
+.github-div {
+    width: 100%;
+    text-align: center;
+}
+.github-link {
+    color: blueviolet;
+    text-decoration: none;
+    font-size: 20px;
+}

@@ -72,8 +72,6 @@ for(let i = 0; i < 4; i++) {
 }
 
 addLift()
-addLift()
-addLift()
 
 console.log(Container)
 
@@ -90,7 +88,9 @@ function useLift(targetFloor) {
             break;
         }
     }
-    console.log(pos)
+    if(pos === undefined) {
+        targetFloors.push(targetFloor)
+    }
 }
 
  function move(targetFloor, pos) {
@@ -121,7 +121,7 @@ function useLift(targetFloor) {
             setTimeout(() => {
                 elevator.classList.remove("busy")
                 if(targetFloors.length) {
-                    move(targetFloors.shift())
+                    move(targetFloors.shift(),pos)
                 }
             }, duration * 1000 + 5000)
 }
