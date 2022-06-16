@@ -1,5 +1,8 @@
 const Container = document.getElementById("container")
 const addfloorBtn = document.getElementById("addfloor")
+const removeFloorBtn = document.getElementById("removefloor")
+const addLiftBtn = document.getElementById("addlift")
+const removeLiftBtn = document.getElementById("removelift")
 let Floors = 0
 let isrunning = false
 let liftpos = 0
@@ -22,8 +25,8 @@ function addFloor() {
     const upBtn = createElement({type: "button", attributes: {class: "upBtn", floorno: `${Floors}`}, innerText: "up"})
     const DownBtn = createElement({type: "button", attributes: {class: "downBtn", floorno: `${Floors}`},innerText: "Down"})
     
-    upBtn.addEventListener("click", () => move(upBtn.getAttribute("floorno")))
-    DownBtn.addEventListener("click", () => move(DownBtn.getAttribute("floorno")))
+    upBtn.addEventListener("click", () => useLift(upBtn.getAttribute("floorno")))
+    DownBtn.addEventListener("click", () => useLift(DownBtn.getAttribute("floorno")))
     
     btnContainer.appendChild(upBtn)
     btnContainer.appendChild(DownBtn)
@@ -31,6 +34,13 @@ function addFloor() {
     floor.appendChild(floorNumber)
     Container.prepend(floor)
     Floors++
+}
+
+function removeFloor() {
+    Floors--
+    const floors = document.querySelectorAll(".floor")
+    floors[0].remove()
+    console.log(floors)
 }
 
 function addLift() {
@@ -44,6 +54,12 @@ function addLift() {
     elevator.appendChild(door2)
     Container.append(elevator)
     definepos()
+}
+
+function removeLift() {
+    liftpos--
+    const elevators = document.querySelectorAll(".elevator")
+    elevators[elevators.length - 1].remove()
 }
 
 function definepos() {
@@ -61,12 +77,26 @@ addLift()
 
 console.log(Container)
 
- function move(targetFloor) {
-        const elevator = document.querySelector(".elevator")
-        
-        if(elevator.classList.contains("busy")) {
-            targetFloors.push(targetFloor)
+function useLift(targetFloor) {
+    const elevators = document.querySelectorAll(".elevator")
+    let pos;
+
+    for(let i = 0; i < elevators.length; i++) {
+        if(elevators[i].classList.contains("busy")) {
+            console.log("check next")
         } else {
+            pos = i
+            move(targetFloor, pos)
+            break;
+        }
+    }
+    console.log(pos)
+}
+
+ function move(targetFloor, pos) {
+        const elevators = document.querySelectorAll(".elevator")
+        const elevator = elevators[pos]
+
             let currentFloor = elevator.getAttribute("onfloor")
             let duration = Math.abs(targetFloor - currentFloor) * 2
     
@@ -76,8 +106,7 @@ console.log(Container)
             elevator.classList.add("busy")
             console.log(duration)
 
-            let doors = document.querySelectorAll(".door")
-            console.log(doors[0])
+            let doors = elevator.children
 
             setTimeout(() => {
                 doors[0].style.transform = 'translateX(-30px)'
@@ -95,10 +124,16 @@ console.log(Container)
                     move(targetFloors.shift())
                 }
             }, duration * 1000 + 5000)
-        }
-        
-    
 }
+/*
+one bug only the first one is getting changed
+   the lifts are moving into other floors but there is nothing to put it in the que
+*/
+
 addfloorBtn.addEventListener("click",addFloor)
+addLiftBtn.addEventListener("click", addLift)
+removeFloorBtn.addEventListener("click",removeFloor)
+removeLiftBtn.addEventListener("click", removeLift)
+
 
 // use id to get the lift one after the other
