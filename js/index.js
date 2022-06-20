@@ -91,10 +91,15 @@ function useLift(targetFloor) {
         if(elevators[i].classList.contains("busy")) {
             if(elevators[i].getAttribute("onfloor") === targetFloor) {
                 return;
-                // works for lift which have a higher index than the one existing on the floor but not for others
             }
             console.log("check next")
         } else {
+            for(let i = 0; i < elevators.length; i++) {
+                if(elevators[i].getAttribute("onfloor") === targetFloor) {
+                    move(targetFloor,i)
+                    return
+                }
+            }
             pos = i
             move(targetFloor, pos)
             break;
