@@ -18,7 +18,7 @@ function createElement({type, attributes={}, innerText}) {
 }
 
 function addFloor() {
-    const floor = createElement({type: "div", attributes: {class: "floor"}})
+    const floor = createElement({type: "div", attributes: {class: "floor", floor: Floors}})
     const btnContainer = createElement({type: "div", attributes: {class: "buttonContainer"}})
     const floorNumber = createElement({type: "div", attributes: {class: "floorNumber"}, innerText: `floor ${Floors}`})
     
@@ -39,6 +39,13 @@ function addFloor() {
 function removeFloor() {
     Floors--
     const floors = document.querySelectorAll(".floor")
+    const lifts = document.querySelectorAll(".elevator")
+    for(let i = 0; i < lifts.length; i++) {
+        if(lifts[i].getAttribute("onfloor") == floors[0].getAttribute("floor")) {
+            alert("There is an elevator on this floor!!")
+            return
+        }
+    }
     floors[0].remove()
     console.log(floors)
 }
@@ -84,6 +91,7 @@ function useLift(targetFloor) {
         if(elevators[i].classList.contains("busy")) {
             if(elevators[i].getAttribute("onfloor") === targetFloor) {
                 return;
+                // works for lift which have a higher index than the one existing on the floor but not for others
             }
             console.log("check next")
         } else {
