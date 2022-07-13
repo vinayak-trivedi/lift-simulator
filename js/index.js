@@ -8,6 +8,14 @@ let isrunning = false
 let liftpos = 0
 const targetFloors = []
 
+const socket = io('http://localhost:3000/')
+
+socket.on('addfloor', addFloor)
+socket.on('removefloor', removeFloor)
+socket.on('addlift', addLift)
+socket.on('removelift', removeLift)
+socket.on('move', (calledOn) => useLift(calledOn))
+
 function createElement({type, attributes={}, innerText}) {
     const element = document.createElement(type)
     Object.keys(attributes).forEach(item => {
@@ -25,8 +33,8 @@ function addFloor() {
     const upBtn = createElement({type: "button", attributes: {class: "upBtn", floorno: `${Floors}`}, innerText: "up"})
     const DownBtn = createElement({type: "button", attributes: {class: "downBtn", floorno: `${Floors}`},innerText: "Down"})
     
-    upBtn.addEventListener("click", () => useLift(upBtn.getAttribute("floorno")))
-    DownBtn.addEventListener("click", () => useLift(DownBtn.getAttribute("floorno")))
+    upBtn.addEventListener("click", () => socket.emit('called', upBtn.getAttribute("floorno")))
+    DownBtn.addEventListener("click", () => socket.emit('called', DownBtn.getAttribute("floorno")))
     
     btnContainer.appendChild(upBtn)
     btnContainer.appendChild(DownBtn)
@@ -142,7 +150,7 @@ function useLift(targetFloor) {
             }, duration * 1000 + 5000)
 }
 
-addfloorBtn.addEventListener("click",addFloor)
-addLiftBtn.addEventListener("click", addLift)
-removeFloorBtn.addEventListener("click",removeFloor)
-removeLiftBtn.addEventListener("click", removeLift)
+addfloorBtn.addEventListener("click", () => socket.emit('addfloor'))
+addLiftBtn.addEventListener("click", () => socket.emit('addlift'))
+removeFloorBtn.addEventListener("click",() => socket.emit('removefloor'))
+removeLiftBtn.addEventListener("click", () => socket.emit('removelift'))
