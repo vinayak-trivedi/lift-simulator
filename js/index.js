@@ -8,7 +8,7 @@ let isrunning = false
 let liftpos = 0
 const targetFloors = []
 
-const socket = io('http://localhost:3000/')
+const socket = io('https://lift-simulation-backend.herokuapp.com/')
 
 socket.on('addfloor', addFloor)
 socket.on('removefloor', removeFloor)
