@@ -7,8 +7,17 @@ let Floors = 0
 let isrunning = false
 let liftpos = 0
 const targetFloors = []
+let device;
 
-const socket = io('https://lift-simulation-backend.herokuapp.com/')
+if(window.screen.width < 450) {
+    device = 'mobile'
+} else if(window.screen.width < 800) {
+    device = 'tab'
+} else {
+    device = 'desktop'
+}
+const socket = io('https://lift-simulation-backend.herokuapp.com/', {query: `userdevice=${device}`})
+socket.emit('create', device)
 
 socket.on('addfloor', addFloor)
 socket.on('removefloor', removeFloor)
@@ -33,8 +42,9 @@ function addFloor() {
     const upBtn = createElement({type: "button", attributes: {class: "upBtn", floorno: `${Floors}`}, innerText: "up"})
     const DownBtn = createElement({type: "button", attributes: {class: "downBtn", floorno: `${Floors}`},innerText: "Down"})
     
-    upBtn.addEventListener("click", () => socket.emit('called', upBtn.getAttribute("floorno")))
-    DownBtn.addEventListener("click", () => socket.emit('called', DownBtn.getAttribute("floorno")))
+
+    upBtn.addEventListener("click", () => socket.emit('called', upBtn.getAttribute("floorno"), device))
+    DownBtn.addEventListener("click", () => socket.emit('called', DownBtn.getAttribute("floorno"), device))
     
     btnContainer.appendChild(upBtn)
     btnContainer.appendChild(DownBtn)
@@ -119,35 +129,35 @@ function useLift(targetFloor) {
 }
 
  function move(targetFloor, pos) {
-        const elevators = document.querySelectorAll(".elevator")
-        const elevator = elevators[pos]
+    const elevators = document.querySelectorAll(".elevator")
+    const elevator = elevators[pos]
 
-            let currentFloor = elevator.getAttribute("onfloor")
-            let duration = Math.abs(targetFloor - currentFloor) * 2
-    
-            elevator.setAttribute("onfloor",targetFloor)
-            elevator.style.transition = `transform ${duration}s linear`
-            elevator.style.transform = `translateY(-${(120 * targetFloor)}px)`
-            elevator.classList.add("busy")
+    let currentFloor = elevator.getAttribute("onfloor")
+    let duration = Math.abs(targetFloor - currentFloor) * 2
 
-            let doors = elevator.children
+    elevator.setAttribute("onfloor",targetFloor)
+    elevator.style.transition = `transform ${duration}s linear`
+    elevator.style.transform = `translateY(-${(120 * targetFloor)}px)`
+    elevator.classList.add("busy")
 
-            setTimeout(() => {
-                doors[0].style.transform = 'translateX(-30px)'
-                doors[1].style.transform = 'translateX(30px)'
-            }, duration * 1000)
+    let doors = elevator.children
 
-            setTimeout(() => {
-                doors[0].style.transform = "none"
-                doors[1].style.transform = "none"
-            }, duration * 1000 + 3000)
-    
-            setTimeout(() => {
-                elevator.classList.remove("busy")
-                if(targetFloors.length) {
-                    move(targetFloors.shift(),pos)
-                }
-            }, duration * 1000 + 5000)
+    setTimeout(() => {
+        doors[0].style.transform = 'translateX(-30px)'
+        doors[1].style.transform = 'translateX(30px)'
+    }, duration * 1000)
+
+    setTimeout(() => {
+        doors[0].style.transform = "none"
+        doors[1].style.transform = "none"
+    }, duration * 1000 + 3000)
+
+    setTimeout(() => {
+        elevator.classList.remove("busy")
+        if(targetFloors.length) {
+            move(targetFloors.shift(),pos)
+        }
+    }, duration * 1000 + 5000)
 }
 
 addfloorBtn.addEventListener("click", () => socket.emit('addfloor'))
