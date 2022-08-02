@@ -19,4 +19,5 @@ A virtual lift simulator
    
  # Some additional features added by me
  - User can stimulate from two or more devices
- - When a user visits the website, based on his screen width a room is created, so two users width a big difference in thier screen size are not in the same room.
+ - When a user visits the website, based on his screen width a room is created, so two users width a big difference in thier    screen size are not in the same room.
+ - See the backend hosted <a href="https://github.com/vinayak-trivedi/lift-simulation-backend">here</a>
