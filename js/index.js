@@ -16,7 +16,9 @@ if(window.screen.width < 450) {
 } else {
     device = 'desktop'
 }
-const socket = io('https://lift-simulation-backend.herokuapp.com/', {query: `userdevice=${device}`})
+const socket = io('https://lift-simulation-backend-fz6e.onrender.com/', {
+  query: `userdevice=${device}`,
+});
 socket.emit('create', device)
 
 socket.on('addfloor', addFloor)
